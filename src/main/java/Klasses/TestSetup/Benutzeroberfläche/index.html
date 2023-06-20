@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Willkommensseite</title>
+    <link rel="stylesheet" href="../Designe/style.css">
+    <script src="../Interaktionen/Translator.js"></script>
+
+    <style>
+    /* CSS-Styling */
+    </style>
+</head>
+<body>
+    <h1>Willkommen zur Ausleih-App!</h1>
+
+    <h2>Informationen:</h2>
+    <label for="username">Benutzername:</label>
+    <input type="text" id="username">
+
+    <label for="email">E-Mail:</label>
+    <input type="email" id="email">
+
+    <label for="password">Password:</label>
+    <input type="password" id="password">
+
+    <button onclick="login()">Anmelden</button>
+
+    <!-- Container für Geräte-Tabelle -->
+    <div id="deviceContainer">
+        <h2>Geräteübersicht:</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Typ</th>
+                <th>Name</th>
+                <th>Datum von</th>
+                <th>Datum bis</th>
+                <th>Name-Mieter</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Hier werden die Geräte-Daten dynamisch generiert -->
+            <tr>
+                <td>Laptop</td>
+                <td>HP Pavilion</td>
+                <td>01.06.2023</td>
+                <td>10.06.2023</td>
+                <td>Max Mustermann</td>
+                <td>Ausgeliehen</td>
+            </tr>
+            <tr>
+                <td>Smartphone</td>
+                <td>iPhone 12</td>
+                <td>05.06.2023</td>
+                <td>15.06.2023</td>
+                <td>Anna Schmidt</td>
+                <td>Verfügbar</td>
+            </tr>
+            <!-- Weitere Geräte-Daten hier einfügen -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Container für Karten -->
+    <div id="cardContainer">
+        <h2>Geräteübersicht (Karten):</h2>
+        <div class="card">
+            <img src="device1.jpg" alt="Gerät 1">
+            <h3>Gerät 1</h3>
+            <p>Weitere Informationen zum Gerät 1.</p>
+        </div>
+        <div class="card">
+            <img src="device2.jpg" alt="Gerät 2">
+            <h3>Gerät 2</h3>
+            <p>Weitere Informationen zum Gerät 2.</p>
+        </div>
+        <!-- Weitere Karten hier einfügen -->
+    </div>
+
+</body>
+</html>
