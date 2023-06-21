@@ -7,5 +7,5 @@ module com.example.javafxdesktopapp {
     requires org.kordamp.bootstrapfx.core;
 
     opens com.example.javafxdesktopapp to javafx.fxml;
-    exports frameinterface; // Exportieren Sie das Paket frameinterface
+    exports frameinterface; // Exportiere das Paket frameinterface
 }
