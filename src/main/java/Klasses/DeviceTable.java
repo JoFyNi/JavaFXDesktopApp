@@ -1,8 +1,12 @@
 package Klasses;
 
+import javafx.collections.ObservableList;
+
 import java.util.List;
 
 public class DeviceTable {
+    private ObservableList<Device> items;
+
     public void enableDeviceInteraction() {
         // Hier kannst du den Code hinzufügen, der die Interaktion mit den Ausleihe-geräten ermöglicht
         // zum Beispiel: Event Listener für Klick ereignisse auf Geräte hinzufügen und entsprechende Aktionen ausführen
@@ -24,5 +28,13 @@ public class DeviceTable {
 
         // Beispielkonsolen ausgabe
         //System.out.println("Das Gerät '" + deviceName + "' wurde von " + inputUsername + " ausgeliehen.");
+    }
+
+    public void setItems(ObservableList<Device> items) {
+        this.items = items;
+    }
+
+    public ObservableList<Device> getItems() {
+        return items;
     }
 }
