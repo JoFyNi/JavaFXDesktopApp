@@ -1,24 +1,29 @@
 package frameinterface;
 
-import Klasses.LoginController;
-import Klasses.DeviceTable;
 import Klasses.Device;
+import Klasses.DeviceTable;
+import Klasses.LoginController;
 import configuration.Config;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
+import javax.xml.stream.EventFilter;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,8 +32,8 @@ public class JavaFXFrame extends Application {
     private final LoginController loginController = new LoginController();
     private final DeviceTable deviceTable = new DeviceTable();
     private Device device;
-    private ObservableList<Device> devices = FXCollections.observableArrayList();
-    private TableView<Device> deviceViewer = new TableView<>(devices);
+    private final ObservableList<Device> devices = FXCollections.observableArrayList();
+    private final TableView<Device> deviceViewer = new TableView<>(devices);
     //
     Label usernameLabel;
     Label emailLabel;
@@ -101,8 +106,24 @@ public class JavaFXFrame extends Application {
 
         Scene scene = new Scene(root, 1000, 600);
         scene.getStylesheets().add("style.css");     // com.sun.javafx.css.StyleManager loadStylesheetUnPrivileged       WARNUNG: Resource "src/main/resources/style.css" not found.
+
+        deviceViewer.setOnMouseClicked(this::handle);
+
         primaryStage.setScene(scene);
         primaryStage.show();
+
+    }
+
+    private void handle(MouseEvent mouseEvent) {
+        TableCell c = (TableCell) mouseEvent.getSource();
+        int index = c.getIndex();
+
+        System.out.println("Typ = " + devices.get(index).getTyp());
+        System.out.println("Name = " + devices.get(index).getName());
+        System.out.println("Nummer = " + devices.get(index).getNumber());
+        System.out.println("Von = " + devices.get(index).getFromDate());
+        System.out.println("Bis = " + devices.get(index).getToDate());
+        System.out.println("Status = " + devices.get(index).getStatus());
     }
 
     private void loadDataFromCSV() {
@@ -159,75 +180,12 @@ public class JavaFXFrame extends Application {
 
         TableColumn<Device, String> statusColumn = new TableColumn<>("Status");
         statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
-        statusColumn.setCellFactory(column -> {
-            TableCell<Device, String> cell = new TableCell<>() {
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setGraphic(null);
-                    } else {
-                        setText(item);
-                        if (item.equals("verfügbar")) {
-                            setOnMouseClicked(event -> {
-                                // Hier können Sie den Dialog anzeigen und die Mietaktion ausführen
-                                Device selectedDevice = getTableView().getItems().get(getIndex());
-                                showDialog(selectedDevice);
-                            });
-                        } else {
-                            setOnMouseClicked(null);
-                        }
-                    }
-                }
-
-                private void showDialog(Device selectedDevice) {
-                    Dialog<Pair<String, String>> dialog = new Dialog<>();
-                    dialog.setTitle("Gerät mieten");
-                    dialog.setHeaderText("Gerät mieten - " + selectedDevice.getName());
-
-                    // Erstellen der Dialogelemente
-                    DatePicker fromDatePicker = new DatePicker();
-                    DatePicker toDatePicker = new DatePicker();
-
-                    GridPane gridPane = new GridPane();
-                    gridPane.add(new Label("Von:"), 0, 0);
-                    gridPane.add(fromDatePicker, 1, 0);
-                    gridPane.add(new Label("Bis:"), 0, 1);
-                    gridPane.add(toDatePicker, 1, 1);
-
-                    dialog.getDialogPane().setContent(gridPane);
-
-                    // Hinzufügen der Dialogbuttons
-                    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-                    // Überprüfen, ob der Benutzer OK geklickt hat
-                    dialog.setResultConverter(dialogButton -> {
-                        if (dialogButton == ButtonType.OK) {
-                            String fromDate = fromDatePicker.getValue().toString();
-                            String toDate = toDatePicker.getValue().toString();
-                            // Führen Sie hier die Aktion für die Mietung aus
-                            // ...
-                            // Geben Sie die ausgewählten Daten zurück
-                            return new Pair<>(fromDate, toDate);
-                        }
-                        return null;
-                    });
-
-                    // Anzeigen des Dialogs und Verarbeiten der Ergebnisse
-                    dialog.showAndWait().ifPresent(result -> {
-                        String fromDate = result.getKey();
-                        String toDate = result.getValue();
-                        // Hier können Sie die ausgewählten Daten verwenden, um die Mietaktion durchzuführen
-                    });
-                }
-            };
-            return cell;
-        });
 
         deviceViewer.setPrefWidth(550); // Setzen Sie die gewünschte Breite des TableView-Elements
         deviceViewer.getStyleClass().add("device-table"); // CSS-Klasse für die Tabelle hinzufügen
         deviceViewer.getColumns().addAll(typeColumn, nameColumn, numberColumn, fromDateColumn, toDateColumn, statusColumn);
+
+        deviceViewer.setEditable(true);
 
         loadDataFromCSV();
     }
@@ -272,6 +230,49 @@ public class JavaFXFrame extends Application {
         });
         pause.play();
     }
+
+    private void showDialog(Device selectedDevice) {
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Gerät mieten");
+        dialog.setHeaderText("Gerät mieten - " + selectedDevice.getName());
+
+        // Erstellen der Dialogelemente
+        DatePicker fromDatePicker = new DatePicker();
+        DatePicker toDatePicker = new DatePicker();
+
+        GridPane gridPane = new GridPane();
+        gridPane.add(new Label("Von:"), 0, 0);
+        gridPane.add(fromDatePicker, 1, 0);
+        gridPane.add(new Label("Bis:"), 0, 1);
+        gridPane.add(toDatePicker, 1, 1);
+
+        dialog.getDialogPane().setContent(gridPane);
+
+        // Hinzufügen der Dialogbuttons
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        // Überprüfen, ob der Benutzer OK geklickt hat
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.OK) {
+                String fromDate = fromDatePicker.getValue().toString();
+                String toDate = toDatePicker.getValue().toString();
+                // Führen Sie hier die Aktion für die Mietung aus
+                // ...
+                // Geben Sie die ausgewählten Daten zurück
+                return new Pair<>(fromDate, toDate);
+            }
+            return null;
+        });
+
+        // Anzeigen des Dialogs und Verarbeiten der Ergebnisse
+        dialog.showAndWait().ifPresent(result -> {
+            String fromDate = result.getKey();
+            String toDate = result.getValue();
+            // Hier können Sie die ausgewählten Daten verwenden, um die Mietaktion durchzuführen
+        });
+    }
+
+
     public static void main(String[] args) {
         launch(args);
     }

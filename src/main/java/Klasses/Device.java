@@ -22,27 +22,27 @@ public class Device {
 
     // Getter für die Eigenschaften
     public String getTyp() {
-        return typ.get();
+        return this.typ.get();
     }
 
     public String getName() {
-        return name.get();
+        return this.name.get();
     }
 
     public String getNumber() {
-        return number.get();
+        return this.number.get();
     }
 
     public String getFromDate() {
-        return fromDate.get();
+        return this.fromDate.get();
     }
 
     public String getToDate() {
-        return toDate.get();
+        return this.toDate.get();
     }
 
     public String getStatus() {
-        return status.get();
+        return this.status.get();
     }
 
     // StringProperty-Getter für die TableView

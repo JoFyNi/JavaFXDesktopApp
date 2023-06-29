@@ -1,11 +1,13 @@
 package Klasses;
 
 import javafx.collections.ObservableList;
+import javafx.scene.control.ChoiceDialog;
 
 import java.util.List;
 
 public class DeviceTable {
     private ObservableList<Device> items;
+    private ChoiceDialog<Object> selectionModel;
 
     public void enableDeviceInteraction() {
         // Hier kannst du den Code hinzufügen, der die Interaktion mit den Ausleihe-geräten ermöglicht
@@ -22,6 +24,7 @@ public class DeviceTable {
             });
         }
     }
+
     private void borrowDevice(String deviceName) {
         // Hier erfolgt die Ausleihe-aktion für das angegebene Gerät
         // zum Beispiel: Aktualisierung der Geräteinformationen in der Datenbank, Änderung des Gerätestatus usw.
@@ -36,5 +39,13 @@ public class DeviceTable {
 
     public ObservableList<Device> getItems() {
         return items;
+    }
+
+    public ChoiceDialog<Object> getSelectionModel() {
+        return selectionModel;
+    }
+
+    public void setSelectionModel(ChoiceDialog<Object> selectionModel) {
+        this.selectionModel = selectionModel;
     }
 }
