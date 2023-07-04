@@ -8,25 +8,19 @@ import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
-import javax.xml.stream.EventFilter;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class JavaFXFrame extends Application {
     private final LoginController loginController = new LoginController();
@@ -115,18 +109,24 @@ public class JavaFXFrame extends Application {
     }
 
     private void handle(MouseEvent mouseEvent) {
-        TableCell c = (TableCell) mouseEvent.getSource();
-        int index = c.getIndex();
+        int selectedIndex = deviceViewer.getSelectionModel().getSelectedIndex();
+        Device selectedDevice = deviceViewer.getSelectionModel().getSelectedItem();
 
-        System.out.println("Typ = " + devices.get(index).getTyp());
-        System.out.println("Name = " + devices.get(index).getName());
-        System.out.println("Nummer = " + devices.get(index).getNumber());
-        System.out.println("Von = " + devices.get(index).getFromDate());
-        System.out.println("Bis = " + devices.get(index).getToDate());
-        System.out.println("Status = " + devices.get(index).getStatus());
+        System.out.println("\nTyp = " + devices.get(selectedIndex).getTyp());
+        System.out.println("Name = " + devices.get(selectedIndex).getName());
+        System.out.println("Nummer = " + devices.get(selectedIndex).getNumber());
+        System.out.println("Von = " + devices.get(selectedIndex).getFromDate());
+        System.out.println("Bis = " + devices.get(selectedIndex).getToDate());
+        System.out.println("Status = " + devices.get(selectedIndex).getStatus() + "\n");
+
+        showDialog(selectedDevice);
     }
 
     private void loadDataFromCSV() {
+        if (deviceTable.getItems() != null) {
+            deviceTable.getItems().clear();
+        }
+
         String line = "";
         String csvFile = "src/main/resources/deviceDatenbank.csv";
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
@@ -232,48 +232,94 @@ public class JavaFXFrame extends Application {
     }
 
     private void showDialog(Device selectedDevice) {
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Gerät mieten");
-        dialog.setHeaderText("Gerät mieten - " + selectedDevice.getName());
+        if (selectedDevice.getStatus().equals("Verfügbar")) {
+            Dialog<Pair<String, String>> dialog = new Dialog<>();
+            dialog.setTitle("Gerät mieten");
+            dialog.setHeaderText("Gerät mieten - " + selectedDevice.getName());
 
-        // Erstellen der Dialogelemente
-        DatePicker fromDatePicker = new DatePicker();
-        DatePicker toDatePicker = new DatePicker();
+            // Erstellen der Dialogelemente
+            DatePicker fromDatePicker = new DatePicker();
+            DatePicker toDatePicker = new DatePicker();
 
-        GridPane gridPane = new GridPane();
-        gridPane.add(new Label("Von:"), 0, 0);
-        gridPane.add(fromDatePicker, 1, 0);
-        gridPane.add(new Label("Bis:"), 0, 1);
-        gridPane.add(toDatePicker, 1, 1);
+            GridPane gridPane = new GridPane();
+            gridPane.add(new Label("Von:"), 0, 0);
+            gridPane.add(fromDatePicker, 1, 0);
+            gridPane.add(new Label("Bis:"), 0, 1);
+            gridPane.add(toDatePicker, 1, 1);
 
-        dialog.getDialogPane().setContent(gridPane);
+            dialog.getDialogPane().setContent(gridPane);
 
-        // Hinzufügen der Dialogbuttons
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+            // Hinzufügen der Dialogbuttons
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        // Überprüfen, ob der Benutzer OK geklickt hat
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == ButtonType.OK) {
-                String fromDate = fromDatePicker.getValue().toString();
-                String toDate = toDatePicker.getValue().toString();
-                // Führen Sie hier die Aktion für die Mietung aus
-                // ...
-                // Geben Sie die ausgewählten Daten zurück
-                return new Pair<>(fromDate, toDate);
+            // Überprüfen, ob der Benutzer OK geklickt hat
+            dialog.setResultConverter(dialogButton -> {
+                if (dialogButton == ButtonType.OK) {
+                    String fromDate = fromDatePicker.getValue().toString();
+                    String toDate = toDatePicker.getValue().toString();
+                    // Führen Sie hier die Aktion für die Mietung aus
+                    // ...
+
+                    // Update CSV file with new data
+                    selectedDevice.setFromDate(fromDate);
+                    selectedDevice.setToDate(toDate);
+                    updateCSV(selectedDevice); // Call the method to update the CSV file
+
+                    // Geben Sie die ausgewählten Daten zurück
+                    return new Pair<>(fromDate, toDate);
+                }
+                return null;
+            });
+
+            // Anzeigen des Dialogs und Verarbeiten der Ergebnisse
+            dialog.showAndWait().ifPresent(result -> {
+                String fromDate = result.getKey();
+                String toDate = result.getValue();
+                // Hier können Sie die ausgewählten Daten verwenden, um die Mietaktion durchzuführen
+            });
+        }
+    }
+
+    private void updateCSV(Device selectedDevice) {
+        String csvFile = "src/main/resources/deviceDatenbank.csv";
+        String tempFile = "src/main/resources/temp.csv";
+        String line;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile));
+             FileWriter fw = new FileWriter(tempFile)) {
+
+            while ((line = br.readLine()) != null) {
+                String[] rowData = line.split(",");
+                String number = rowData[2];
+
+                if (selectedDevice.getNumber().equals(number)) {
+                    // Update the fromDate and toDate values
+                    rowData[3] = selectedDevice.getFromDate();
+                    rowData[4] = selectedDevice.getToDate();
+                }
+
+                fw.write(String.join(",", rowData) + System.lineSeparator());
             }
-            return null;
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        // Anzeigen des Dialogs und Verarbeiten der Ergebnisse
-        dialog.showAndWait().ifPresent(result -> {
-            String fromDate = result.getKey();
-            String toDate = result.getValue();
-            // Hier können Sie die ausgewählten Daten verwenden, um die Mietaktion durchzuführen
-        });
+        // Rename the temporary file to the original file
+        File originalFile = new File(csvFile);
+        File temp = new File(tempFile);
+        if (temp.renameTo(originalFile)) {
+            System.out.println("CSV file updated successfully.");
+        } else {
+            System.out.println("Failed to update the CSV file.");
+        }
+
+        loadDataFromCSV(); // Reload the data from the CSV file
     }
 
 
-    public static void main(String[] args) {
+
+
+        public static void main(String[] args) {
         launch(args);
     }
 

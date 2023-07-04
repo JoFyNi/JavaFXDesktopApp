@@ -7,8 +7,8 @@ public class Device {
     private final StringProperty typ;
     private final StringProperty name;
     private final StringProperty number;
-    private final StringProperty fromDate;
-    private final StringProperty toDate;
+    private StringProperty fromDate;
+    private StringProperty toDate;
     private final StringProperty status;
 
     public Device(String typ, String name, String number, String fromDate, String toDate, String status) {
@@ -68,5 +68,13 @@ public class Device {
 
     public StringProperty statusProperty() {
         return status;
+    }
+
+    public void setFromDate(String newFromDate) {
+        this.fromDate = new SimpleStringProperty(newFromDate);
+    }
+
+    public void setToDate(String newToDate) {
+        this.toDate = new SimpleStringProperty(newToDate);
     }
 }
