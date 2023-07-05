@@ -1,6 +1,6 @@
 # JavaFXDesktopApp
 
-Ein Programm zur speicherung vom Status eines Gerätes und zum Ausleihen von Geräten
+Ein Programm zur speicherung des Status eines Gerätes und zum Ausleihen von Geräten
 
 ![img.png](withoutLogin.png)
 Inhalte der Tabellen wird ohne korrekten Login, nicht geladen!

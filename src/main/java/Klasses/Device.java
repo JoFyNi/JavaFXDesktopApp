@@ -7,14 +7,16 @@ public class Device {
     private final StringProperty typ;
     private final StringProperty name;
     private final StringProperty number;
+    private StringProperty user;
     private StringProperty fromDate;
     private StringProperty toDate;
     private StringProperty status;
 
-    public Device(String typ, String name, String number, String fromDate, String toDate, String status) {
+    public Device(String typ, String name, String number, String user, String fromDate, String toDate, String status) {
         this.typ = new SimpleStringProperty(typ);
         this.name = new SimpleStringProperty(name);
         this.number = new SimpleStringProperty(number);
+        this.user = new SimpleStringProperty(user);
         this.fromDate = new SimpleStringProperty(fromDate);
         this.toDate = new SimpleStringProperty(toDate);
         this.status = new SimpleStringProperty(status);
@@ -31,6 +33,9 @@ public class Device {
 
     public String getNumber() {
         return this.number.get();
+    }
+    public String getUser() {
+        return this.user.get();
     }
 
     public String getFromDate() {
@@ -57,6 +62,9 @@ public class Device {
     public StringProperty numberProperty() {
         return number;
     }
+    public StringProperty userProperty() {
+        return user;
+    }
 
     public StringProperty fromDateProperty() {
         return fromDate;
@@ -70,6 +78,9 @@ public class Device {
         return status;
     }
 
+    public void setUser(String newUser) {
+        this.fromDate = new SimpleStringProperty(newUser);
+    }
     public void setFromDate(String newFromDate) {
         this.fromDate = new SimpleStringProperty(newFromDate);
     }

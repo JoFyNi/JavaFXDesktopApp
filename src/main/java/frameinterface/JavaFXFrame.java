@@ -98,7 +98,7 @@ public class JavaFXFrame extends Application {
         root.setTop(new Label("Willkommen zur Ausleihe!"));
         root.setCenter(infoVBox);
         root.setLeft(deviceTableVBox);
-        root.setRight(cardContainerVBox);
+        root.setBottom(cardContainerVBox);
 
         Scene scene = new Scene(root, 1000, 600);
         scene.getStylesheets().add("style.css");     // com.sun.javafx.css.StyleManager loadStylesheetUnPrivileged       WARNUNG: Resource "src/main/resources/style.css" not found.
@@ -142,10 +142,11 @@ public class JavaFXFrame extends Application {
                 String typ = rowData[0];
                 String name = rowData[1];
                 String number = rowData[2];
-                String fromDate = rowData[3];
-                String toDate = rowData[4];
-                String status = rowData[5];
-                device = new Device(typ, name, number, fromDate, toDate, status);
+                String user = rowData[3];
+                String fromDate = rowData[4];
+                String toDate = rowData[5];
+                String status = rowData[6];
+                device = new Device(typ, name, number, user, fromDate, toDate, status);
                 devices.add(device);
             }
         } catch (IOException e) {
@@ -172,11 +173,14 @@ public class JavaFXFrame extends Application {
         TableColumn<Device, String> typeColumn = new TableColumn<>("Typ");
         typeColumn.setCellValueFactory(cellData -> cellData.getValue().typProperty());
 
-        TableColumn<Device, String> nameColumn = new TableColumn<>("Name");
+        TableColumn<Device, String> nameColumn = new TableColumn<>("Bezeichnung");
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
 
         TableColumn<Device, String> numberColumn = new TableColumn<>("Number");
         numberColumn.setCellValueFactory(cellData -> cellData.getValue().numberProperty());
+
+        TableColumn<Device, String> userColumn = new TableColumn<>("Benutzer");
+        userColumn.setCellValueFactory(cellData -> cellData.getValue().numberProperty());
 
         TableColumn<Device, String> fromDateColumn = new TableColumn<>("Datum von");
         fromDateColumn.setCellValueFactory(cellData -> cellData.getValue().fromDateProperty());
@@ -187,9 +191,9 @@ public class JavaFXFrame extends Application {
         TableColumn<Device, String> statusColumn = new TableColumn<>("Status");
         statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
 
-        deviceViewer.setPrefWidth(550); // Setzen Sie die gewünschte Breite des TableView-Elements
+        deviceViewer.setPrefWidth(620); // Setzen Sie die gewünschte Breite des TableView-Elements
         deviceViewer.getStyleClass().add("device-table"); // CSS-Klasse für die Tabelle hinzufügen
-        deviceViewer.getColumns().addAll(typeColumn, nameColumn, numberColumn, fromDateColumn, toDateColumn, statusColumn);
+        deviceViewer.getColumns().addAll(typeColumn, nameColumn, numberColumn, userColumn, fromDateColumn, toDateColumn, statusColumn);
 
         deviceViewer.setEditable(true);
 
@@ -246,12 +250,15 @@ public class JavaFXFrame extends Application {
             // Erstellen der Dialogelemente
             DatePicker fromDatePicker = new DatePicker();
             DatePicker toDatePicker = new DatePicker();
+            TextField userField = new TextField();
 
             GridPane gridPane = new GridPane();
-            gridPane.add(new Label("Von:"), 0, 0);
-            gridPane.add(fromDatePicker, 1, 0);
-            gridPane.add(new Label("Bis:"), 0, 1);
-            gridPane.add(toDatePicker, 1, 1);
+            gridPane.add(new Label("Name:"), 0, 0);
+            gridPane.add(userField, 1, 0);
+            gridPane.add(new Label("Von:"), 0, 1);
+            gridPane.add(fromDatePicker, 1, 1);
+            gridPane.add(new Label("Bis:"), 0, 2);
+            gridPane.add(toDatePicker, 1, 2);
 
             dialog.getDialogPane().setContent(gridPane);
 
@@ -261,12 +268,14 @@ public class JavaFXFrame extends Application {
             // Überprüfen, ob der Benutzer OK geklickt hat
             dialog.setResultConverter(dialogButton -> {
                 if (dialogButton == ButtonType.OK) {
+                    String user = userField.getText();
                     String fromDate = fromDatePicker.getValue().toString();
                     String toDate = toDatePicker.getValue().toString();
                     // Führen Sie hier die Aktion für die Mietung aus
                     // ...
 
                     // Update CSV file with new data
+                    selectedDevice.setUser(user);
                     selectedDevice.setFromDate(fromDate);
                     selectedDevice.setToDate(toDate);
                     selectedDevice.setStatus("Ausgeliehen");
@@ -323,9 +332,10 @@ public class JavaFXFrame extends Application {
 
                 if (selectedDevice.getNumber().equals(number)) {
                     // Update the fromDate and toDate values
-                    rowData[3] = selectedDevice.getFromDate();
-                    rowData[4] = selectedDevice.getToDate();
-                    rowData[5] = selectedDevice.getStatus();    // set status
+                    rowData[3] = selectedDevice.getUser();
+                    rowData[4] = selectedDevice.getFromDate();
+                    rowData[5] = selectedDevice.getToDate();
+                    rowData[6] = selectedDevice.getStatus();    // set status
                 }
 
                 fw.write(String.join(",", rowData) + System.lineSeparator());
