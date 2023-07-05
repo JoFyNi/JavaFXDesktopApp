@@ -21,6 +21,8 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.util.Optional;
 
 public class JavaFXFrame extends Application {
     private final LoginController loginController = new LoginController();
@@ -131,7 +133,6 @@ public class JavaFXFrame extends Application {
         if (deviceTable.getItems() != null) {
             deviceTable.getItems().clear();
         }
-
         String line = "";
         String csvFile = "src/main/resources/deviceDatenbank.csv";
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
@@ -268,6 +269,7 @@ public class JavaFXFrame extends Application {
                     // Update CSV file with new data
                     selectedDevice.setFromDate(fromDate);
                     selectedDevice.setToDate(toDate);
+                    selectedDevice.setStatus("Ausgeliehen");
                     updateCSV(selectedDevice); // Call the method to update the CSV file
 
                     // Geben Sie die ausgewählten Daten zurück
@@ -282,6 +284,29 @@ public class JavaFXFrame extends Application {
                 String toDate = result.getValue();
                 // Hier können Sie die ausgewählten Daten verwenden, um die Mietaktion durchzuführen
             });
+        } else {
+            // Create a confirmation dialog for deleting the data
+            Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmDialog.setTitle("Daten löschen");
+            confirmDialog.setHeaderText("Daten des Geräts löschen - " + selectedDevice.getName());
+            confirmDialog.setContentText("Sind Sie sicher, dass Sie die Daten des Geräts löschen möchten?");
+
+            Optional<ButtonType> result = confirmDialog.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Update the device's data
+                String currentDate = LocalDate.now().toString();
+                selectedDevice.setFromDate(currentDate);
+                selectedDevice.setToDate(currentDate);
+                selectedDevice.setStatus("Verfügbar");
+                updateCSV(selectedDevice); // Call the method to update the CSV file
+
+                // Show a message to indicate successful deletion
+                Alert deletionSuccess = new Alert(Alert.AlertType.INFORMATION);
+                deletionSuccess.setTitle("Daten gelöscht");
+                deletionSuccess.setHeaderText(null);
+                deletionSuccess.setContentText("Die Daten des Geräts wurden erfolgreich gelöscht.");
+                deletionSuccess.showAndWait();
+            }
         }
     }
 
@@ -292,7 +317,6 @@ public class JavaFXFrame extends Application {
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile));
              FileWriter fw = new FileWriter(tempFile)) {
-
             while ((line = br.readLine()) != null) {
                 String[] rowData = line.split(",");
                 String number = rowData[2];
@@ -301,6 +325,7 @@ public class JavaFXFrame extends Application {
                     // Update the fromDate and toDate values
                     rowData[3] = selectedDevice.getFromDate();
                     rowData[4] = selectedDevice.getToDate();
+                    rowData[5] = selectedDevice.getStatus();    // set status
                 }
 
                 fw.write(String.join(",", rowData) + System.lineSeparator());
@@ -312,6 +337,7 @@ public class JavaFXFrame extends Application {
         // Rename the temporary file to the original file
         File originalFile = new File(csvFile);
         File temp = new File(tempFile);
+        originalFile.delete();
         if (temp.renameTo(originalFile)) {
             System.out.println("CSV file updated successfully.");
         } else {

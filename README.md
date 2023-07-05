@@ -10,3 +10,6 @@ Nach korrekten Login wird die Tabelle freigegeben.
 
 ![img.png](zeitangabe.png)
 Wenn ein Gerät "Verfügbar" ist, kann man es durch ein Anklicken "Mieten" (Mit zeitangabe von bis).
+
+![img.png](eintragZurücksetzen.png)
+Wenn ein Gerät "Ausgeliehen" ist, kann man es durch einen Anklick und darauf folgenden Dialog zurücksetzen.
