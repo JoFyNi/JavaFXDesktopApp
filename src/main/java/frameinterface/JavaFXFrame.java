@@ -109,17 +109,22 @@ public class JavaFXFrame extends Application {
     }
 
     private void handle(MouseEvent mouseEvent) {
-        int selectedIndex = deviceViewer.getSelectionModel().getSelectedIndex();
-        Device selectedDevice = deviceViewer.getSelectionModel().getSelectedItem();
+        try {
+            int selectedIndex = deviceViewer.getSelectionModel().getSelectedIndex();
+            Device selectedDevice = deviceViewer.getSelectionModel().getSelectedItem();
 
-        System.out.println("\nTyp = " + devices.get(selectedIndex).getTyp());
-        System.out.println("Name = " + devices.get(selectedIndex).getName());
-        System.out.println("Nummer = " + devices.get(selectedIndex).getNumber());
-        System.out.println("Von = " + devices.get(selectedIndex).getFromDate());
-        System.out.println("Bis = " + devices.get(selectedIndex).getToDate());
-        System.out.println("Status = " + devices.get(selectedIndex).getStatus() + "\n");
+            // Konsolen ausgaben können im späteren Verlauf entfernt werden
+            System.out.println("\nTyp = " + devices.get(selectedIndex).getTyp());
+            System.out.println("Name = " + devices.get(selectedIndex).getName());
+            System.out.println("Nummer = " + devices.get(selectedIndex).getNumber());
+            System.out.println("Von = " + devices.get(selectedIndex).getFromDate());
+            System.out.println("Bis = " + devices.get(selectedIndex).getToDate());
+            System.out.println("Status = " + devices.get(selectedIndex).getStatus() + "\n");
 
-        showDialog(selectedDevice);
+            showDialog(selectedDevice);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadDataFromCSV() {
