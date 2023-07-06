@@ -180,7 +180,7 @@ public class JavaFXFrame extends Application {
         numberColumn.setCellValueFactory(cellData -> cellData.getValue().numberProperty());
 
         TableColumn<Device, String> userColumn = new TableColumn<>("Benutzer");
-        userColumn.setCellValueFactory(cellData -> cellData.getValue().numberProperty());
+        userColumn.setCellValueFactory(cellData -> cellData.getValue().userProperty());
 
         TableColumn<Device, String> fromDateColumn = new TableColumn<>("Datum von");
         fromDateColumn.setCellValueFactory(cellData -> cellData.getValue().fromDateProperty());
@@ -209,7 +209,6 @@ public class JavaFXFrame extends Application {
             handleSuccessfulLogin();
             // Anmeldedaten speichern für das schnelle Ausleihen von geräten
             // enable DeviceTable
-            deviceTable.enableDeviceInteraction();
         } else if (!loginController.compareLoginData(inputUsername, inputEmail, inputPassword)) {
             System.out.println("login data do not match");
             handleFailedLogin();
@@ -271,15 +270,15 @@ public class JavaFXFrame extends Application {
                     String user = userField.getText();
                     String fromDate = fromDatePicker.getValue().toString();
                     String toDate = toDatePicker.getValue().toString();
-                    // Führen Sie hier die Aktion für die Mietung aus
-                    // ...
+
+                    System.out.println(user + " " + fromDate + " " + toDate);
 
                     // Update CSV file with new data
                     selectedDevice.setUser(user);
                     selectedDevice.setFromDate(fromDate);
                     selectedDevice.setToDate(toDate);
                     selectedDevice.setStatus("Ausgeliehen");
-                    updateCSV(selectedDevice); // Call the method to update the CSV file
+                    updateCSV(selectedDevice);              // Call the method to update the CSV file
 
                     // Geben Sie die ausgewählten Daten zurück
                     return new Pair<>(fromDate, toDate);
@@ -291,6 +290,7 @@ public class JavaFXFrame extends Application {
             dialog.showAndWait().ifPresent(result -> {
                 String fromDate = result.getKey();
                 String toDate = result.getValue();
+                String user = userField.getText();
                 // Hier können Sie die ausgewählten Daten verwenden, um die Mietaktion durchzuführen
             });
         } else {
@@ -304,6 +304,7 @@ public class JavaFXFrame extends Application {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 // Update the device's data
                 String currentDate = LocalDate.now().toString();
+                selectedDevice.setUser("none");
                 selectedDevice.setFromDate(currentDate);
                 selectedDevice.setToDate(currentDate);
                 selectedDevice.setStatus("Verfügbar");
@@ -354,9 +355,9 @@ public class JavaFXFrame extends Application {
             System.out.println("Failed to update the CSV file.");
         }
 
-        loadDataFromCSV(); // Reload the data from the CSV file
+        // Refresh the table view to reflect the updated data
+        deviceViewer.refresh();
     }
-
 
 
 

@@ -79,7 +79,7 @@ public class Device {
     }
 
     public void setUser(String newUser) {
-        this.fromDate = new SimpleStringProperty(newUser);
+        this.user = new SimpleStringProperty(newUser);
     }
     public void setFromDate(String newFromDate) {
         this.fromDate = new SimpleStringProperty(newFromDate);

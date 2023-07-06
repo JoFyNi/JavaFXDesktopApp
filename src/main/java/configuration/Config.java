@@ -37,8 +37,3 @@ public class Config {
         this.fxmlPath = fxmlPath;
     }
 }
-
-    // CSS_PATH = "src/main/resources/style.css"
-    // FXML_PATH = "src/main/resources/com/example/javafxdesktopapp/frame-view.fxml"
-
-
