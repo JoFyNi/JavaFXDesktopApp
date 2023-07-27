@@ -26,26 +26,21 @@ public class Device {
     public String getTyp() {
         return this.typ.get();
     }
-
     public String getName() {
         return this.name.get();
     }
-
     public String getNumber() {
         return this.number.get();
     }
     public String getUser() {
         return this.user.get();
     }
-
     public String getFromDate() {
         return this.fromDate.get();
     }
-
     public String getToDate() {
         return this.toDate.get();
     }
-
     public String getStatus() {
         return this.status.get();
     }
@@ -54,41 +49,35 @@ public class Device {
     public StringProperty typProperty() {
         return typ;
     }
-
     public StringProperty nameProperty() {
         return name;
     }
-
     public StringProperty numberProperty() {
         return number;
     }
     public StringProperty userProperty() {
         return user;
     }
-
     public StringProperty fromDateProperty() {
         return fromDate;
     }
-
     public StringProperty toDateProperty() {
         return toDate;
     }
-
     public StringProperty statusProperty() {
         return status;
     }
 
+    // Setter für das Mieten der Geräte (Informations-Austausch)
     public void setUser(String newUser) {
         this.user = new SimpleStringProperty(newUser);
     }
     public void setFromDate(String newFromDate) {
         this.fromDate = new SimpleStringProperty(newFromDate);
     }
-
     public void setToDate(String newToDate) {
         this.toDate = new SimpleStringProperty(newToDate);
     }
-
     public void setStatus(String newStatus) {
         this.status = new SimpleStringProperty(newStatus);
     }
